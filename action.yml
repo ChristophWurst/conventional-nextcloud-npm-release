@@ -65,7 +65,7 @@ runs:
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
       run: npm run build --if-present
-    - name: Public package
+    - name: Publish package
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
       run: npm publish
