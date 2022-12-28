@@ -2,6 +2,16 @@
 
 Release npm package to Github and the npm registry using conventional commits.
 
+The action performs the following steps:
+
+1) Check out the code
+2) Figure out what type of release is do, if any
+3) Generate a CHANGELOG
+4) Bump the version, commit the changes, tag and push to Github
+5) Create a Github release using the tag and the changelog information
+6) Build the package
+7) Publish to the npm package registry
+
 ## Inputs
 
 * **Required** ``github-token``: Personal access token for GitHub with the ``public_repo`` scope.
