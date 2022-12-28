@@ -60,7 +60,7 @@ runs:
     - name: Install dependencies
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
-      run: npm run ci
+      run: npm ci
     - name: Build package
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
