@@ -1,0 +1,73 @@
+name: 'Conventional nextcloud npm release'
+description: 'Release npm package to Github and the npm registry using conventional commits'
+branding:
+  icon: 'cloud'
+  color: 'blue'
+inputs:
+  github-token:
+    description: 'GitHub auth token'
+    required: true
+  npm-token:
+    description: 'Npm registry auth token'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    # Preparation
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        token: ${{ inputs.github-token }}
+        fetch-depth: 0
+
+    # Tag and publish the Github release
+    - name: Conventional Changelog Action
+      id: changelog
+      uses: TriPSs/conventional-changelog-action@v3
+      with:
+        github-token: ${{ inputs.github-token }}
+        skip-git-pull: "true"
+        release-count: 0 # Keep all versions
+        version-file: "package.json, package-lock.json"
+    - name: Create Github release
+      uses: actions/create-release@v1
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      with:
+        tag_name: ${{ steps.changelog.outputs.tag }}
+        release_name: ${{ steps.changelog.outputs.tag }}
+        body: ${{ steps.changelog.outputs.clean_changelog }}
+
+    # Build and publish on npm registry
+    - name: Read package.json node and npm engines version
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      uses: skjnldsv/read-package-engines-version-actions@v1.1
+      id: versions
+      with:
+        fallbackNode: '^16'
+        fallbackNpm: '^8'
+    - name: Set up Node.js ${{ inputs.node-version }}
+      if: ${{ steps.changelog.outputs.skipped == 'false' && inputs.node-version != 'false' }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ steps.versions.outputs.nodeVersion }}
+        registry-url: 'https://registry.npmjs.org'
+    - name: Set up npm ${{ inputs.npm-version }}
+      if: ${{ steps.changelog.outputs.skipped == 'false' && inputs.npm-version != 'default' }}
+      shell: bash
+      run: npm i -g npm@"${{ inputs.npm-version }}"
+    - name: Install dependencies
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      shell: bash
+      run: npm run ci
+    - name: Build package
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      shell: bash
+      run: npm run build --if-present
+    - name: Public package
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      shell: bash
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
