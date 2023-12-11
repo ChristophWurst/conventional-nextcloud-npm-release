@@ -36,7 +36,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: ChristophWurst/conventional-nextcloud-npm-release@v1
+      - uses: ChristophWurst/conventional-nextcloud-npm-release@v1.0.0
         with:
           github-token: ${{ secrets.RELEASE_PAT }}
           npm-token: ${{ secrets.NPM_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
     environment: npm registry
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: ChristophWurst/conventional-nextcloud-npm-release@v1.0.0
         with:
           github-token: ${{ secrets.RELEASE_PAT }}
           npm-token: ${{ secrets.NPM_TOKEN }}
