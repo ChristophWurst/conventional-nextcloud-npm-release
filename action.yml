@@ -10,6 +10,10 @@ inputs:
   npm-token:
     description: 'Npm registry auth token'
     required: true
+  npm-tag:
+    description: 'Npm tag to publish to'
+    required: false
+    default: 'latest'
 runs:
   using: "composite"
   steps:
@@ -68,6 +72,6 @@ runs:
     - name: Publish package
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
-      run: npm publish
+      run: npm publish --tag=${{ inputs.npm-tag }}
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
