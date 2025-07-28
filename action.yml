@@ -57,10 +57,10 @@ runs:
       with:
         node-version: ${{ steps.versions.outputs.nodeVersion }}
         registry-url: 'https://registry.npmjs.org'
-    - name: Set up npm ${{ inputs.npm-version }}
-      if: ${{ steps.changelog.outputs.skipped == 'false' && inputs.npm-version != 'default' }}
+    - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
-      run: npm i -g npm@"${{ inputs.npm-version }}"
+      run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
     - name: Install dependencies
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       shell: bash
